@@ -1,0 +1,13 @@
+final USAGE = "USAGE: vault-health.gy <vault-host>[:<port>]"
+final RESPONSE_OK = 200
+if (args.length != 1) {
+	println(USAGE)
+}
+target = args[0]
+def get = new URL(target + "/sys/heath").openConnection();
+def getRC = get.getResponseCode();
+if(!getRC.equals(200)) {
+	println("response code: " + getRC);
+	System.exit(1)
+} 
+println("Vault Health Status: " + get.getInputStream().getText());

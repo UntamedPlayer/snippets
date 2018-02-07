@@ -1,0 +1,13 @@
+/**
+ * USAGE: vault-seal-status.gy <vault-host>[:<port>]
+**/
+
+final RESPONSE_OK = 200
+target = args[0]
+def get = new URL(target + "/sys/seal-status").openConnection();
+def getRC = get.getResponseCode();
+if(!getRC.equals(200)) {
+	println("response code: " + getRC);
+	System.exit(1)
+} 
+println("Vault Seal Status: " + get.getInputStream().getText());
