@@ -1,9 +1,32 @@
-# USAGE identity_file couchbase-backup.sh backup_directory backup_name backup_bucket_name couchbase_username couchbase_password s3_bucket_name
-if [[ $# -ne 7 || $1 -eq "-h" ]]; then
-    echo "USAGE: identity_file couchbase-backup.sh backup_directory backup_name backup_bucket_name couchbase_username couchbase_password"
-    echo "Requires that the following packages be installed and on the path\n\tcbbackup\n\taws-cli"
-    exit 0
-fi
+USAGE="usage: mysql-backup.sh -h node_hostname -i identity_file -d db_hostname [-n db_name] -u db_user -p db_password [-b backup_directory]\n\t-h  / --node-hostname: IP or hostname of a Kubernetes node\n\t-i  / --identity-file: Optional, defaults to ec2-keypairs/ailabs-cluster-node.pem\n\t-d  / --db-hostname: DB Hostname or RDS Endpoint\n\t-n  / --db-name: Optional defaults to axiom\n\t-u  / --db-user: Optional defaults to qa_master\n\t-p  / --db-password: DB password\n\t-b  / --backup-directory: Optional defaults to ./"
+NODE_USER="ec2-user"
+NODE_HOSTNAME=""
+IDENTITY_FILE=""
+DB_HOSTNAME=""
+DB_NAME="axiom"
+DB_USER="qa"
+DB_PASSWORD=""
+BACKUP_DIRECTORY=./
+
+PARAMS=""
+
+while (( "$#" )); do
+  case "$1" in
+    "-h" | "--help") echo $USAGE; exit 0 ;;
+    "-k" | "--node-hostname") NODE_HOSTNAME=$2; shift 2 ;;
+    "-i" | "--identity-file") IDENTITY_FILE=$2; shift 2 ;;
+    "-d" | "--db-hostname") DB_HOSTNAME=$2; shift 2 ;;
+    "-n" | "--db-name") DB_NAME=$2; shift 2 ;;
+    "-u" | "--db-user") DB_USER=$2; shift 2 ;;
+    "-p" | "--db-password") DB_PASSWORD=$2; shift 2 ;;
+    "-b" | "--backup-directory") BACKUP_DIRECTORY=$2; shift 2 ;;
+    * )
+      break
+      PARAMS="$PARAMS $1"
+      shift
+  esac
+done
+eval set -- "$PARAMS"
 
 COUCHBASE_HOME=/opt/couchbase/bin
 IDENTITY_FILE=$1   #ec2-keypairs/ailabs-cluster-node-qa.pem 
